@@ -15,12 +15,13 @@ router.get('/', async (req, res) => {
 // fetching a blog
 router.get('/:id', async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findOne({ id: req.params.id });
     res.json(blog);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to fetch blog' });
   }
 });
+
 
 // updating or saving
 router.post('/save-draft', async (req, res) => {
@@ -34,15 +35,17 @@ router.post('/save-draft', async (req, res) => {
 
     let blog;
     if (req.query.id) {
-      blog = await Blog.findByIdAndUpdate(req.query.id, blogData, { new: true });
+      blog = await Blog.findOneAndUpdate({ id: req.query.id }, blogData, { new: true });
     } else {
       blog = await Blog.create(blogData);
     }
+
     res.json(blog);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to save draft' });
   }
 });
+
 
 // publishing
 router.post('/publish', async (req, res) => {
@@ -55,29 +58,26 @@ router.post('/publish', async (req, res) => {
     };
 
     let blog;
-
     if (req.query.id) {
-      // updating
-      blog = await Blog.findByIdAndUpdate(req.query.id, blogData, { new: true });
+      blog = await Blog.findOneAndUpdate({ id: req.query.id }, blogData, { new: true });
     } else {
-      // creating
       blog = await Blog.create(blogData);
     }
 
     res.json(blog);
-  } catch (err) {
-    console.error('Publish error:', err);
+  } catch {
     res.status(500).json({ error: 'Failed to publish blog' });
   }
 });
 
 
+
 // deleting
 router.delete('/:id', async (req, res) => {
   try {
-    await Blog.findByIdAndDelete(req.params.id);
+    await Blog.findOneAndDelete({ id: req.params.id });
     res.json({ success: true });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Failed to delete blog' });
   }
 });

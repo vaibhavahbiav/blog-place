@@ -22,7 +22,7 @@ function YourBlogs() {
     try {
       await axios.delete(`/api/blogs/${id}`, { withCredentials: true });
       toast.success('Blog deleted!!');
-      setBlogs(prev => prev.filter(blog => blog._id !== id));
+      setBlogs(prev => prev.filter(blog => blog.id !== id));
     } catch {
       toast.error('Delete failed!!');
     }
@@ -39,20 +39,20 @@ function YourBlogs() {
       <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white text-center">Your Blogs</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-10">
         {blogs.map(blog => (
-          <div key={blog._id} className="p-4 border rounded-lg bg-gray-100 shadow-md shadow-gray-900 border-black">
+          <div key={blog.id} className="p-4 border rounded-lg bg-gray-100 shadow-md shadow-gray-900 border-black">
             <h2 className="text-lg font-semibold truncate">{blog.title}</h2>
             <p className=" text-sm mt-1">Status: <span className={`${blog.status === 'draft' ? 'text-orange-500' : ' text-green-500'}`}>{blog.status}</span></p>
             <h2 className="text-sm mt-1">Created at : {formatDate(blog.created_at)}</h2>
             <h2 className="text-sm mt-1">Updated at : {formatDate(blog.updated_at)}</h2>
             <div className="mt-2 flex space-x-3 justify-end">
               <button
-                onClick={() => navigate(`/create?id=${blog._id}`)}
+                onClick={() => navigate(`/create?id=${blog.id}`)}
                 className="p-3 rounded-full hover:bg-yellow-400 text-white text-lg"
               >
                 ✍️
               </button>
               <button
-                onClick={() => handleDelete(blog._id)}
+                onClick={() => handleDelete(blog.id)}
                 className="p-3 rounded-full hover:bg-red-500 text-white text-lg"
               >
                 🗑️

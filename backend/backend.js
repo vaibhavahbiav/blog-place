@@ -5,7 +5,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
 const blogRoutes = require('./routes/blogRoutes');
-const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +28,5 @@ app.use(session({
 }));
 
 app.use('/api/blogs', blogRoutes);
-app.use('/api/auth', authRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
