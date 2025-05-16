@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill/dist/quill.snow.css';
 import { toast } from 'react-toastify';
@@ -40,20 +40,38 @@ function CreateBlog() {
     [blog]
   );
 
+  const goto = useNavigate();
+  const [hasPublished, setHasPublished] = useState(false);
+
   useEffect(() => {
     debouncedSave();
     return debouncedSave.cancel;
   }, [blog.title, blog.content, blog.tags]);
 
   const handlePublish = async () => {
-    try {
-      const payload = { ...blog, tags: blog.tags.split(',').map(t => t.trim()) };
-      await axios.post('/api/blogs/publish', payload, { withCredentials: true });
-      toast.success('Blog has been Published!!');
-    } catch (err) {
-      toast.error('Publishing failed!!');
-    }
-  };
+  try {
+    const payload = {
+      ...blog,
+      tags: blog.tags.split(',').map(t => t.trim()),
+      status: 'published',
+    };
+
+    const endpoint = blogId
+      ? `/api/blogs/publish?id=${blogId}`
+      : '/api/blogs/publish';
+
+    await axios.post(endpoint, payload, { withCredentials: true });
+    toast.success('Blog Published');
+
+    setHasPublished(true);
+    setTimeout(() => {
+      goto('/blogs');
+    }, 1000);
+  } catch (err) {
+    toast.error('Publish failed');
+  }
+};
+
 
   const saveDraft = async () => {
     const trimmedTags = blog.tags.split(',').map(t => t.trim());
@@ -104,7 +122,7 @@ function CreateBlog() {
           <ReactQuill
             value={blog.content}
             onChange={(val) => handleChange('content', val)}
-            className="bg-white w-full rounded-lg overflow-clip"
+            className="bg-white w-full rounded-lg overflow-clip "
           />
         </div>
         <div className='flex flex-col items-start space-y-2'>

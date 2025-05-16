@@ -54,12 +54,23 @@ router.post('/publish', async (req, res) => {
       status: 'published',
     };
 
-    const blog = await Blog.create(blogData);
+    let blog;
+
+    if (req.query.id) {
+      // updating
+      blog = await Blog.findByIdAndUpdate(req.query.id, blogData, { new: true });
+    } else {
+      // creating
+      blog = await Blog.create(blogData);
+    }
+
     res.json(blog);
   } catch (err) {
+    console.error('Publish error:', err);
     res.status(500).json({ error: 'Failed to publish blog' });
   }
 });
+
 
 // deleting
 router.delete('/:id', async (req, res) => {
